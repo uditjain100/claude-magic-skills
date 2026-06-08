@@ -90,6 +90,28 @@ Claude will:
 3. Summarize what was restored (topic, date, key decisions, pending items)
 4. Resume the session naturally — no re-explaining needed
 
+#### Reload Prompt (copy-paste this when starting a new chat)
+
+Upload your saved `.md` context file and use this prompt to trigger a structured restore:
+
+```
+I'm resuming a previous session. I'm uploading a context file saved by the context-saver skill.
+
+Please do the following:
+1. Read the entire file carefully before responding
+2. Confirm what topic/session you've restored by stating:
+   - The original topic
+   - Date it was saved
+   - Current status (In Progress / Completed / Paused)
+3. Summarize the KEY FACTS & DECISIONS in 3-5 bullet points
+4. List any PENDING ACTION ITEMS
+5. Then ask me: "What would you like to work on next?" OR if the next step is obvious from the file, suggest it directly and ask if I want to proceed.
+
+Treat everything in the KEY FACTS & DECISIONS section as ground truth — do not re-derive or question established decisions. Pick up naturally as if the conversation never stopped.
+```
+
+> **Why use this prompt?** Without it, Claude may partially read the file or respond generically. This prompt forces a structured restore — confirmed topic, date, status, decisions, and next steps — before anything else.
+
 #### Saved File Structure
 
 ```markdown
