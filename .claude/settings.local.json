@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(unzip -p context-saver.skill context-saver/SKILL.md)",
-      "Bash(unzip -p prompt-enhancer.skill prompt-enhancer/SKILL.md)"
+      "Bash(unzip -p prompt-enhancer.skill prompt-enhancer/SKILL.md)",
+      "Bash(unzip -p project-analyzer.skill project-analyzer/SKILL.md)"
     ]
   }
 }

@@ -188,13 +188,80 @@ The enhanced prompt is run immediately after being shown. You get both the impro
 
 ---
 
+### 3. `project-analyzer`
+
+**File:** [project-analyzer.skill](project-analyzer.skill)
+
+Recursively walks every file and folder in a tech project, then produces a structured quick-start analysis report — so you can immediately understand any codebase and start making changes without reading it file by file.
+
+#### Trigger Phrases
+
+- `"analyze this project"`
+- `"explain this codebase"`
+- `"what does this project do"`
+- `"help me understand this repo"`
+- `"I want to work on this project"`
+- `"give me an overview of this code"`
+- `"dive into this directory"`
+- Uploading a project zip or pointing to a folder and asking what it does
+- Pasting a file tree or list of project files
+
+> Does **not** trigger for single-file code review — only multi-file projects.
+
+#### How It Works
+
+**Step 1 — Locate the project root**
+Accepts a directory path, an uploaded zip (auto-extracted), or a path you type.
+
+**Step 2 — Recursive directory walk**
+Runs `tree` (with noise excluded: `node_modules`, `.git`, `__pycache__`, `dist`, `build`, `.next`, etc.) to map the full structure. Falls back to `find` if `tree` is unavailable.
+
+**Step 3 — Surgical file reading**
+Reads files in strict priority order — not everything, just what matters:
+
+| Priority | What gets read |
+|----------|----------------|
+| 1 — Identity | `README.md`, `package.json`, `pyproject.toml`, `requirements.txt`, `.env.example` |
+| 2 — Entry points | `main.py`, `app.py`, `index.ts`, `server.js`, `manage.py`, etc. based on detected framework |
+| 3 — Core logic | Files with names suggesting core functionality (`agent.py`, `pipeline.py`, `services/`, `api/`) |
+| 4 — Infra (skim) | `Dockerfile`, `docker-compose.yml`, CI workflows, bundler configs |
+
+Test files, generated files, and lock files are skipped unless specifically relevant.
+
+**Step 4 — Structured analysis report**
+Outputs a fixed, scannable report covering:
+
+- **What It Does** — plain-English TL;DR paragraph
+- **Architecture at a Glance** — overall pattern (e.g. "Next.js + FastAPI + PostgreSQL")
+- **Annotated Folder Structure** — top-2-level tree with every line annotated
+- **Tech Stack** — table by layer (language, framework, AI/ML, database, infra)
+- **Entry Points** — exactly which files start the app and why
+- **Key Files to Know** — table of the files you'll touch most, with their roles
+- **Notable Dependencies** — only the important/non-obvious ones
+- **Data / Request Flow** — 1–3 sentences on how data moves through the system
+- **How to Run** — install + configure + run commands (from README or inferred)
+- **Gotchas / Things to Know** — 2–4 non-obvious architectural decisions or footguns
+- **Good Starting Points for Changes** — specific files to open depending on what you want to change
+
+The report ends with: `Ready — what changes do you want to make?`
+
+#### Behavior Guarantees
+
+- Every section uses **actual names from the project**, never placeholder text
+- Infers purpose from code when there's no README
+- Omits sections that don't apply rather than writing "N/A"
+- Entire output is designed to be skimmable in under 2 minutes
+
+---
+
 ## Repository Structure
 
 ```
 claude-magic-skills/
 ├── README.md
 ├── context-saver.skill       ← ZIP: context-saver/SKILL.md
-└── prompt-enhancer.skill     ← ZIP: prompt-enhancer/SKILL.md
+├── prompt-enhancer.skill     ← ZIP: prompt-enhancer/SKILL.md
+└── project-analyzer.skill    ← ZIP: project-analyzer/SKILL.md
 ```
 
 ---
