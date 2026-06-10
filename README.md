@@ -254,6 +254,116 @@ The report ends with: `Ready — what changes do you want to make?`
 
 ---
 
+### 4. `ats-scorer`
+
+**File:** [ats-scorer.skill](ats-scorer.skill)
+
+Performs a precise, multi-dimensional ATS (Applicant Tracking System) score analysis on a resume against a job description. Produces a numeric score (0–100), category-level breakdown, keyword gap analysis, format audit, and a ranked fix list — so you know exactly what to fix before submitting.
+
+#### Trigger Phrases
+
+- `"check ATS score"`
+- `"scan my resume"`
+- `"how ATS-friendly is my resume"`
+- `"will my resume pass ATS"`
+- `"ATS check"` / `"ATS analysis"`
+- `"keyword match"` / `"will I get filtered out"`
+- `"what keywords am I missing"`
+- `"is my formatting ATS-safe"`
+- `"optimize for ATS"`
+- Pasting a resume + job description and asking how well they align
+
+#### Scoring Model
+
+Scores across 8 weighted categories — research-calibrated, not arbitrary:
+
+| Category | Weight | Why It Matters |
+|----------|--------|---------------|
+| Hard Skills & Keyword Match | 30% | Single biggest driver of ATS ranking |
+| Job Title & Seniority Alignment | 18% | Title match is the highest-impact ATS signal |
+| Format & Parseability | 17% | Parse failure invalidates all downstream scoring |
+| Skills Section Coverage | 15% | Dedicated section materially improves keyword extraction |
+| Quantification & Impact | 8% | AI-native ATS and all recruiters weight this |
+| Education Match | 7% | Required-degree filters are hard knockouts in enterprise ATS |
+| Career Trajectory & Signals | 3% | Progression matters to AI-native ATS |
+| Soft Skills (contextual) | 2% | Credited only when used naturally with evidence |
+
+#### Output
+
+Each run produces:
+- **Final score** (0–100) with band label (Excellent / Good / Fair / Weak / Poor)
+- **Category breakdown** with score, max, and status for each of the 8 categories
+- **Parsed resume snapshot** — what an ATS parser would actually extract
+- **Keyword match analysis** — matched (exact / acronym / semantic) and missing (critical / recommended / predicted)
+- **Format audit** — 11-point checklist with PASS/PARTIAL/FAIL and specific fixes
+- **Platform simulation** — score estimates for Taleo/SuccessFactors (strict), Workday/iCIMS (standard), and Greenhouse/Lever (modern)
+- **Priority fix list** — up to 8 ranked fixes, each with estimated points gained and exact instruction
+- **Score potential** — current, after top 3 fixes, after all fixes, realistic ceiling
+
+#### Platform Detection
+
+If you provide an application URL, the skill detects the ATS platform (Workday, Taleo, Greenhouse, Lever, iCIMS, etc.) and applies that platform's specific parsing rules rather than showing a generic simulation.
+
+#### Key Principle
+
+> A score near 100% via keyword stuffing is worse than a score of 75% with clean, natural text. The target sweet spot is **75–85%** — strong match without sacrificing recruiter readability.
+
+---
+
+### 5. `resume-tailor`
+
+**File:** [resume-tailor.skill](resume-tailor.skill)
+
+Takes your existing resume and a target job description, and produces a fully tailored, ATS-optimized, recruiter-ready version — rewriting bullets, reordering sections, aligning keywords, and adjusting the summary — without fabricating any experience.
+
+#### Trigger Phrases
+
+- `"tailor my resume"`
+- `"customize resume for this JD"`
+- `"update my resume for this role"`
+- `"help me apply for this job"`
+- `"make my resume match this posting"`
+- `"optimize my resume"` / `"rewrite my resume for"`
+- `"highlight relevant experience"`
+- `"add keywords from JD"`
+- `"make my resume ATS-friendly"` for a given job
+- Pasting a job description alongside your resume and asking for help
+
+#### How It Works
+
+**Step 1 — Analysis:** Before rewriting, shows a brief analysis block — role level, domain match strength, gap areas, hidden strengths, ATS risks, and whether sections need reordering.
+
+**Step 2 — Tailoring:** Applies a systematic set of rules:
+- **Keyword alignment** — injects JD keywords naturally into bullets and summary using exact JD phrasing
+- **Bullet rewriting** — uses the STAR-L formula (verb + what + how + result + scale); directly relevant bullets get JD language, tangential bullets get reframed, irrelevant bullets get deprioritized
+- **Summary rewrite** — mirrors the JD's language for the ideal candidate; opens with role title alignment
+- **Skills reordering** — JD-matching skills move to the top; JD terminology is used verbatim
+- **Section ordering** — reorders top-level sections based on role type (engineering, research, new grad, hybrid)
+- **Projects elevation** — JD-aligned projects move to the top; descriptions rewritten with JD keywords
+
+#### Output
+
+```
+📄 TAILORED RESUME — [Job Title] at [Company]
+[Full resume — ready to copy into a doc]
+
+🔍 CHANGES MADE
+Summary, keywords added, bullets rewritten, skills/sections reordered
+
+⚠️  GAP REPORT
+Honest list of JD requirements the resume can't cover, each with severity (critical / minor / nice-to-have) and a suggested mitigation
+```
+
+#### Hard Constraints
+
+The skill never fabricates. It will not invent job titles, companies, degrees, skills, certifications, or impact numbers. It reframes, reorders, rewords, and reemphasizes — but every claim must trace back to something the user actually did.
+
+#### Edge Cases Handled Automatically
+
+Detects and adjusts for: career change, new grad, senior/staff/lead roles, research roles, overqualified candidates, employment gaps, multiple roles at the same company, and international resume formats.
+
+---
+
 ## Repository Structure
 
 ```
@@ -261,7 +371,9 @@ claude-magic-skills/
 ├── README.md
 ├── context-saver.skill       ← ZIP: context-saver/SKILL.md
 ├── prompt-enhancer.skill     ← ZIP: prompt-enhancer/SKILL.md
-└── project-analyzer.skill    ← ZIP: project-analyzer/SKILL.md
+├── project-analyzer.skill    ← ZIP: project-analyzer/SKILL.md
+├── ats-scorer.skill          ← ZIP: ats-scorer/SKILL.md + references/ats-platforms.md
+└── resume-tailor.skill       ← ZIP: resume-tailor/SKILL.md
 ```
 
 ---
