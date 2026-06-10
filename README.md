@@ -364,6 +364,60 @@ Detects and adjusts for: career change, new grad, senior/staff/lead roles, resea
 
 ---
 
+### 6. `fact-checker`
+
+**File:** [fact-checker.skill](fact-checker.skill)
+
+Performs deep, line-by-line web research on any text or document to verify whether each factual claim is true, false, unverifiable, or uncertain — then produces a per-claim confidence score and a full visual verification report.
+
+#### Trigger Phrases
+
+- `"fact-check this"`
+- `"verify this text"` / `"is this accurate"`
+- `"check if this is true"` / `"verify these claims"`
+- `"audit this content"` / `"research and validate this"`
+- Pasting text and asking whether it's correct
+- Uploading a document (resume, article, report, bio, LinkedIn excerpt) and asking for fact verification
+
+#### How It Works
+
+**Phase 0 — Parse the Input**
+Extracts every verifiable factual claim (names, dates, numbers, credentials, events, statistics, titles, institutions) from the pasted text or uploaded file. Each claim is numbered `[F1]`, `[F2]`, …
+
+**Phase 1 — Web Research**
+For every claim, runs a targeted web search and fetches full pages when needed. Never relies on training data alone — all claims are actively researched.
+
+**Phase 2 — Score Each Claim**
+Assigns a Confidence Score (0–100) and a verdict:
+
+| Verdict | Score | Meaning |
+|---------|-------|---------|
+| ✅ VERIFIED | 80–100 | Confirmed by credible source(s) |
+| ⚠️ LIKELY TRUE | 60–79 | Supported by indirect/partial evidence |
+| ❓ UNVERIFIABLE | 40–59 | No reliable source found either way |
+| 🔴 LIKELY FALSE | 20–39 | Evidence contradicts the claim |
+| ❌ FALSE | 0–19 | Directly refuted by credible source(s) |
+| 🤷 UNKNOWN | — | Cannot determine; more research needed |
+
+#### Output
+
+Each run produces (in order):
+
+1. **Extracted Claims** — numbered list of all verifiable facts found
+2. **Research & Verification Table** — claim, verdict, score, evidence summary, and source URL for every claim
+3. **Visual Confidence Report** — color-coded bar chart/card grid with per-claim scores, summary stats (total claims, verified, false, unknown), and an Overall Document Score
+4. **Final Verdict** — 3–5 sentence plain-English summary: overall reliability, critical issues, and what to do with the content
+
+#### Edge Cases Handled Automatically
+
+- **Resume / CV input:** Treats job titles, dates, institutions, and degree names as individual facts; résumé fraud detection mode
+- **News articles:** Focuses on named events, statistics, and untraced quotes
+- **Technical docs:** Verifies API names, version numbers, and library behaviors against official documentation
+- **Very long input (20+ claims):** Chunked into groups of 10, then combined into a single final report
+- **Private/internal claims** (e.g., "I led a team of 12"): Marked UNKNOWN — not verified or fabricated
+
+---
+
 ## Repository Structure
 
 ```
@@ -373,7 +427,8 @@ claude-magic-skills/
 ├── prompt-enhancer.skill     ← ZIP: prompt-enhancer/SKILL.md
 ├── project-analyzer.skill    ← ZIP: project-analyzer/SKILL.md
 ├── ats-scorer.skill          ← ZIP: ats-scorer/SKILL.md + references/ats-platforms.md
-└── resume-tailor.skill       ← ZIP: resume-tailor/SKILL.md
+├── resume-tailor.skill       ← ZIP: resume-tailor/SKILL.md
+└── fact-checker.skill        ← ZIP: fact-checker/SKILL.md
 ```
 
 ---
